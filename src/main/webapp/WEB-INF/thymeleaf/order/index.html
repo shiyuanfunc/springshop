@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="common"></head>
+<head>
+    <link rel="stylesheet" th:href="@{/css/amazeui.address.min.css}" />
+    <script th:src="@{/js/iscroll.min.js}" ></script>
+    <script th:src="@{/js/address.js}" ></script>
+    <title>订单信息</title>
+</head>
+<body>
+    <div th:include="header"></div>
+
+    <div class="am-scrollable-horizontal">
+        <!--<form class="am-form am-form-horizontal" id="resform" method="post" th:action="@{/login/res}">
+            <div class="am-form-group">
+                <select id="doc-select-1" name="orderStatus">
+                    <option value="-1">请选择查询条件</option>
+                    <option value="1" th:if="${'1' eq #httpServletRequest.getParameter('orderStatus')}" th:text="未支付" selected="selected"/>
+                    <option value="1" th:if="${'1' ne #httpServletRequest.getParameter('orderStatus')}" th:text="未支付" />
+
+                    <option value="2" th:if="${'2' eq #httpServletRequest.getParameter('orderStatus')}" th:text="已支付" selected="selected"/>
+                    <option value="2" th:if="${'2' ne #httpServletRequest.getParameter('orderStatus')}" th:text="已支付" />
+
+                    <option value="3" th:if="${'3' eq #httpServletRequest.getParameter('orderStatus')}" th:text="已返利" selected="selected"/>
+                    <option value="3" th:if="${'3' ne #httpServletRequest.getParameter('orderStatus')}" th:text="已返利" />
+
+                </select>
+                <span class="am-form-caret"></span>
+            </div>
+        </form>-->
+        <table class="am-table am-table-bordered am-table-striped am-text-nowrap">
+            <thead>
+                <tr class="am-primary">
+                    <th>订单号</th>
+                    <th>下单者</th>
+                    <th>手机号</th>
+                    <th>总价</th>
+                    <th>下单时间</th>
+                    <th>支付时间</th>
+                    <th>配送地址</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="am-success" th:each="order:${list}">
+                    <td><a th:text="${order.orderNum}" th:href="@{'/order/detail/'+${order.id}}"></a></td>
+                    <th th:text="${order.realName}"></th>
+                    <th th:text="${order.tel}"></th>
+                    <td th:text="${order.orderMoney}"></td>
+                    <td th:text="${order.createTime}"></td>
+                    <td th:text="${order.send_pay_date}"></td>
+                    <td th:text="${order.address}"></td>
+                    <td th:text="${order.status}"></td>
+                    <td>
+                        <a th:if="${order.orderStatus eq 1}" th:onclick="${'settingsConfig('+ order.id+',2)'}" href="javascript:void(0)" th:text="确认支付"></a>
+                        <a th:if="${order.orderStatus eq 2}" th:onclick="${'settingsConfig('+ order.id+',3)'}" href="javascript:void(0)" th:text="确认发货"></a>
+                        <a th:if="${order.orderStatus eq -1}" th:onclick="${'settingsConfig('+ order.id+',0)'}" href="javascript:void(0)" th:text="确认退款"></a>
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div th:include="panigation" />
+    </div>
+
+    <!--<div th:include="footer" />-->
+    <script th:inline="javascript">
+        function settingsConfig(id , status) {
+            var prefix = [[${#httpServletRequest.getContextPath()}]] ;
+            var r = confirm("您确定要操作该订单吗？") ;
+            if(r) {
+                window.location.href= prefix+"/order/setting/"+id+"/config/"+status;
+            }
+        }
+
+       /* $(function(){
+         var prefix = [[${#httpServletRequest.getContextPath()}]] ;
+         $("#doc-select-1").change(function(){
+         var sel = $("#doc-select-1").find("option:selected") ;
+         if(sel.val()=="-1") return false ;
+         window.location.href=prefix+"/order/index?orderStatus="+sel.val();
+         });
+         });*/
+    </script>
+</body>
+</html>

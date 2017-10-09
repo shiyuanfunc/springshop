@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="common"></head>
+<head>
+    <title>系统首页</title>
+</head>
+<body>
+
+    <div th:include="header"></div>
+
+    <!-- content start -->
+    <div class="admin-content">
+        <div class="admin-content-body">
+            <ul class="am-avg-sm-1 am-avg-md-4 am-margin am-padding am-text-center admin-content-list ">
+                <li><a th:href="@{/main/admin}" class="am-text-success"><span class="am-icon-btn am-icon-file-text"></span><br/>用户管理<br/></a></li>
+                <li><a th:href="@{/c/goods/home}" class="am-text-warning"><span class="am-icon-btn am-icon-briefcase"></span><br/>商品录入管理<br/></a></li>
+                <li><a th:href="@{/goods/query}" class="am-text-danger"><span class="am-icon-btn am-icon-recycle"></span><br/>商品信息管理<br/></a></li>
+                <li><a th:href="@{/order/rebate}" class="am-text-secondary"><span class="am-icon-btn am-icon-user-md"></span><br/>返利信息管理<br/></a></li>
+                <!--<li><a href="#" class="am-text-success"><span class="am-icon-btn am-icon-file-text"></span><br/>系统管理<br/></a></li>-->
+            </ul>
+            <ul class="am-avg-sm-1 am-avg-md-4 am-margin am-padding am-text-center admin-content-list ">
+                <li><a th:href="@{/order/index?orderStatus=1}" class="am-text-success"><span class="am-icon-btn am-icon-file-text"></span><br/>未支付订单管理<br/></a></li>
+                <li><a th:href="@{/order/index?orderStatus=2}" class="am-text-warning"><span class="am-icon-btn am-icon-briefcase"></span><br/>未发货订单管理<br/></a></li>
+                <li><a th:href="@{/order/index?orderStatus=3}" class="am-text-danger"><span class="am-icon-btn am-icon-recycle"></span><br/>已完结订单管理<br/></a></li>
+                <li><a th:href="@{/order/index?orderStatus=-1}" class="am-text-secondary"><span class="am-icon-btn am-icon-recycle"></span><br/>申请退款订单管理<br/></a></li>
+
+
+                <!--@{/sys/home}-->
+                <!--<li><a href="javascript:alert('系统正在研发中······')" class="am-text-secondary"><span class="am-icon-btn am-icon-user-md"></span><br/>系统设置<br/></a></li>-->
+                <!--<li><a href="#" class="am-text-success"><span class="am-icon-btn am-icon-file-text"></span><br/>系统管理<br/></a></li>-->
+            </ul>
+        </div>
+        <!-- content end -->
+
+    </div>
+
+</body>
+</html>

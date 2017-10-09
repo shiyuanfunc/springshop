@@ -1,0 +1,77 @@
+<header data-am-widget="header" class="am-header am-header-default am-header-fixed"
+        xmlns:th="http://www.w3.org/1999/xhtml">
+    <div class="am-header-left am-header-nav">
+        <a th:href="@{/main/}" class="" title="首页">
+            <i class="am-header-icon am-icon-home"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title">
+        <a th:href="@{/main/}" class="" th:text="${application.SITE_SYS_NAME}"></a>
+    </h1>
+
+    <div class="am-header-right am-header-nav">
+       <!-- <a href="#user-link" class="">
+            <i class="am-header-icon am-icon-gear"></i>
+        </a>-->
+        <a th:href="@{/login/out}" class="" title="退出">
+            <i class="am-header-icon am-icon-sign-out"></i>
+        </a>
+    </div>
+</header>
+
+<!-- 左侧工具栏 -->
+<!--
+<nav data-am-widget="menu" class="am-menu  am-menu-offcanvas1"   data-am-menu-offcanvas="true">
+    <a href="javascript: void(0)" class="am-menu-toggle"><i class="am-menu-toggle-icon am-icon-bars"></i></a>
+    <div class="am-offcanvas" >
+        <div class="am-offcanvas-bar">
+            <ul class="am-menu-nav am-avg-sm-1">
+                <li class="am-parent">
+                    <a href="##" class="" >系统管理</a>
+                    <ul class="am-menu-sub am-collapse  am-avg-sm-2 ">
+                        <li class="">
+                           <a href="##" class="" >会员级别设置</a>
+                        </li>
+                        <li class="">
+                            <a href="##" class="" >级别返利设置</a>
+                        </li>
+
+                    </ul>
+                </li>
+
+                <li class="am-parent">
+                    <a href="##" class="" >会员管理</a>
+                    <ul class="am-menu-sub am-collapse  am-avg-sm-2 ">
+                        <li class="">
+                            <a th:href="@{/c/user/add}" class="" >新增会员</a>
+                        </li>
+                        <li class="">
+                            <a href="##" class="" >查看会员</a>
+                        </li>
+
+                    </ul>
+                </li>
+                <li class="am-parent">
+                    <a href="##" class="" >订单管理</a>
+                    <ul class="am-menu-sub am-collapse  am-avg-sm-3 ">
+                        <li>
+                            <a href="##" class="" >审核订单</a>
+                        </li>
+                        <li class="">
+                            <a href="##" class="" >新增订单</a>
+                        </li>
+                        <li class="">
+                            <a href="##" class="" >查看订单</a>
+                        </li>
+                        <li class="">
+                            <a href="##" class="" >查看返利信息</a>
+                        </li>
+
+                    </ul>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</nav>
+-->

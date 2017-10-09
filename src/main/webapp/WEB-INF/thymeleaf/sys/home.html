@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="common"></head>
+<head>
+    <title>系统设置</title>
+</head>
+<body>
+
+<div th:include="header"></div>
+
+<nav data-am-widget="menu" class="am-menu  am-menu-stack">
+    <a href="javascript: void(0)" class="am-menu-toggle">
+        <i class="am-menu-toggle-icon am-icon-bars"></i>
+    </a>
+    <ul class="am-menu-nav am-avg-sm-1">
+        <li class="am-parent">
+            <a href="##" class="" >网站名管理</a>
+            <ul class="am-menu-sub am-collapse  am-form-group">
+                <li>
+                    <input type="text" class="am-form-field am-radius" th:if="${not #maps.isEmpty(sysName)}" th:value="${sysName.paramValue}"  id="sys_config_1" placeholder="输入网站名"/>
+                    <input type="text" class="am-form-field am-radius" th:if="${#maps.isEmpty(sysName)}" id="sys_config_1" placeholder="输入网站名"/>
+                </li>
+            </ul>
+        </li>
+
+        <li class="am-parent">
+            <a href="##" class="" >会员等级设置</a>
+            <ul class="am-menu-sub am-collapse  am-form-group ">
+                <li>
+                    <input type="number" class="am-form-field am-radius" th:if="${not #maps.isEmpty(level)}" th:value="${level.paramValue}"   id="sys_config_2" placeholder="设置会员等级数，进行收益返现管理"/>
+                    <input type="number" class="am-form-field am-radius" th:if="${#maps.isEmpty(level)}"  id="sys_config_2" placeholder="设置会员等级数，进行收益返现管理"/>
+                </li>
+            </ul>
+        </li>
+
+        <li class="am-parent">
+            <a href="##" class="" >会员返利设置</a>
+            <ul class="am-menu-sub am-collapse  am-form-group ">
+                <li class="am-form am-form-group ">
+                        <select id="doc-select-1" name="bankType" >
+                            <option value="-1">请选择</option>
+                            <option th:if="${not #maps.isEmpty(level)}" th:each="ls:${#numbers.sequence(1 , level.paramValue)}"
+                                    th:value="${ls}" th:text="${ls+'级'}"/>
+                        </select>
+                        <input type="number" class="am-form-field am-radius"  id="sys_config_3" placeholder="设置会员返利率,单位%"/>
+                </li>
+            </ul>
+        </li>
+
+        <li class="am-parent">
+            <a href="##" class="" >会员下线人数设置</a>
+            <ul class="am-menu-sub am-collapse  am-form-group ">
+                <li>
+                    <input type="number" class="am-form-field am-radius" th:if="${not #maps.isEmpty(userNum)}" th:value="${userNum.paramValue}"  id="sys_config_4" placeholder="设置单个会员下线最大人数"/>
+                    <input type="number" class="am-form-field am-radius" th:if="${#maps.isEmpty(userNum)}"  id="sys_config_4" placeholder="设置单个会员下线最大人数"/>
+                </li>
+            </ul>
+        </li>
+        <!--<li class="">
+            <a th:href="@{/order/query}" class="" >订单管理</a>
+        </li>-->
+       <!-- <li class="">
+            <a th:href="@{/c/goods/home}" class="" >商品管理</a>
+        </li>-->
+        <li>
+            <a th:href="@{/login/out}" class="" >退出系统</a>
+
+        </li>
+    </ul>
+
+</nav>
+<div th:include="footer" />
+
+
+
+<script th:inline="javascript">
+   /* <![CDATA[*/
+    var prefix = [[${#httpServletRequest.getContextPath()}]];
+    $(function(){
+        $("#sys_config_1").change(function(){
+            var val = $(this).val();
+            if(val==null || val =="") return ;
+            ajaxSetSys(1, val ,"网站名称");
+        });
+
+        $("#sys_config_2").change(function(){
+            var val = $(this).val();
+            if(val==null || val =="") return ;
+            if(!/^\d+$/.test(val)) {
+                showTag($(this), '只能输入数字'); return false ;
+            }
+            ajaxSetSys(2, val, "会员等级" , function(r){
+                var options= '<option value="-1">请选择</option>' ;
+                if(r.status=='success') {
+                    //通过javascript进行拼接
+                    for(var i= 1;i<= parseInt(val);i++){
+                        options += '<option value="'+i+'">'+i+'级</option>' ;
+                    }
+                    $("#doc-select-1").html(options);
+                }
+
+            });
+        });
+
+        $("#sys_config_3").change(function(){
+            var sel = $("#doc-select-1");
+            var val = $(this).val();
+
+            var ls = sel.find("option:selected").val() ;
+            if(ls == -1) {
+                alert("请选择会员级别"); return false ;
+            }
+            if(val==null || val =="") return ;
+            if(!/^\d+$/.test(val)) {
+                showTag($(this), '只能输入整数数字'); return false ;
+            }
+            //插入用户级别配置表中
+            $.ajax({
+                url:prefix+"/sys/levelConfig" ,
+                type:"POST",
+                data:{ls:ls , rate:val},
+                dataType:"json"
+            });
+        });
+
+
+        $("#sys_config_4").change(function(){
+            var val = $(this).val();
+            if(val==null || val =="") return ;
+            if(!/^\d+$/.test(val)) {
+                showTag($(this), '只能输入数字'); return false ;
+            }
+            ajaxSetSys(3, val , "会员下线人数");
+        });
+
+
+        var rates = [[${rates}]] ;
+
+        $("#doc-select-1").change(function(){
+            var val = $(this).find("option:selected").val();
+            //更改选项的时候，根据对应的级别，设置对应级别的返利信息
+            $.each(rates , function(i ,row){
+                if(row.ls == val) {
+                    $("#sys_config_3").val(row.rate) ;
+                }
+            }) ;
+        });
+    });
+    function showTag(tag ,context){
+        tag.popover({
+            theme: 'danger sm',
+        });
+        tag.popover("open");
+        tag.popover("setContent" , context);
+    }
+
+    function ajaxSetSys(tagId , val , paramName , callback) {
+
+        $.ajax({
+            url:prefix+"/sys/config/" + tagId ,
+            type:"POST",
+            data:{content:val , paramName:paramName},
+            dataType:"json",
+            success:callback||function(r){
+
+            }
+        });
+    }
+
+
+   /* ]]>*/
+</script>
+</body>
+</html>
+
+

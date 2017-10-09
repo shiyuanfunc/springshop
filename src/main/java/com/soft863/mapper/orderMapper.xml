@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft863.dao.OrderDao">
+	<insert id="saveOrder">
+		insert into t_order(id ,orderNum ,userId, orderMoney ,orderStatus , createTime) values(
+			#{orderId},#{orderNum} ,#{userId},#{money} ,1 , now()
+		)
+		<selectKey keyProperty="orderId" resultType="int" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<insert id="saveOrderUser">
+		insert into t_order_user(orderId ,tel, address ,realName ) values(
+			#{orderId} , #{tel} ,#{detail} , #{realName}
+		)
+	</insert>
+
+	<insert id="saveOrderGoods">
+		insert into t_order_goods(orderId ,goodsId ,goodsName,goodsPrice,goodsNum,goods_total_price) values
+			<foreach collection="list" item="obj" separator="," >
+				(#{obj.orderId},#{obj.goodsId},#{obj.goodsName},#{obj.goodsPrice},#{obj.goodsNum},goodsNum * goodsPrice )
+			</foreach>
+	</insert>
+
+
+	<select id="queryAdminOrders" resultType="map">
+		select t.* ,s.name as status,u.address ,u.realName ,u.tel from t_order t left join
+             t_order_status s on t.orderStatus=s.id
+            left join t_order_user u on u.orderId = t.id
+            where  t.ostatus = 1
+			<if test="orderNum!=null and orderNum!=''">
+				t.orderNum = #{orderNum}
+			</if>
+			<if test="orderStatus!=null and orderStatus!=''">
+				and t.orderStatus = #{orderStatus}
+			</if>
+            order by t.createTime desc limit ${start} , ${rows}
+	</select>
+
+	<select id="queryAdminOrdersCount" resultType="int">
+		select count(1) from t_order t
+		where  t.ostatus = 1
+		<if test="orderNum!=null and orderNum!=''">
+			t.orderNum = #{orderNum}
+		</if>
+		<if test="orderStatus!=null and orderStatus!=''">
+			and t.orderStatus = #{orderStatus}
+		</if>
+	</select>
+
+	<!--
+		statementType=CALLABLE
+		jdbcType=大写
+		mode=IN/OUT
+	-->
+	<!--调用存储过程,该存储过程没有返回值，直接把值放到了money中作为参数返回-->
+	<select id="queryRebateByUserId"  statementType="CALLABLE" parameterType="map">
+		{call queryUserMsg(#{userId,jdbcType=INTEGER,mode=IN} , #{money,jdbcType=DOUBLE ,mode=OUT})}
+	</select>
+
+	<!-- 支付宝已支付逻辑 -->
+	<update id="updateOrderPayStatus" parameterType="com.alibaba.fastjson.JSONObject">
+		update t_order set buyer_user_id = #{buyer_user_id} ,receipt_amount=#{receipt_amount} ,
+		trade_status = #{trade_status} , buyer_logon_id = #{buyer_logon_id} ,
+		trade_no =#{trade_no} , send_pay_date = #{send_pay_date} ,
+		payStatus = #{payStatus} , orderStatus =#{orderStatus} ,
+		payType = 1  where orderNum = #{out_trade_no}
+	</update>
+
+</mapper>

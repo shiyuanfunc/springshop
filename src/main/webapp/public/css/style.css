@@ -1,0 +1,4 @@
+@charset "UTF-8";
+.am-thumbnails div span {padding:0px 8px;font-size:90%;margin:0px;display: inline-block;color:#00000;float:left;}
+.am-thumbnails div b {color:#f40;font-size:80%;padding:0px 5px;margin:0px;display: inline-block;float: right;}
+.am-header .am-header-title {margin:0px;}

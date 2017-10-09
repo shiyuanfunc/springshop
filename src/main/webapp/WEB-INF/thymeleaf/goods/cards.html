@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="common"></head>
+<head>
+    <link rel="stylesheet" th:href="@{/css/amazeui.address.min.css}" />
+    <script th:src="@{/js/iscroll.min.js}" ></script>
+    <script th:src="@{/js/address.js}" ></script>
+    <title>商品信息</title>
+</head>
+<body>
+    <div th:include="header"></div>
+
+
+
+
+    <div class="am-scrollable-horizontal">
+        <table class="am-table am-table-bordered am-table-striped am-table-hover">
+            <caption>购物车-商品一览</caption>
+            <thead>
+            <tr class="am-primary">
+                <th><input type="checkbox" id="all" checked="checked"/></th>
+                <th>名称</th>
+                <th>单价</th>
+                <th>数量</th>
+                <th>总价格</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr class="am-success" th:each="g:${list}">
+                <td><input type="checkbox" class="t3" checked="checked" th:value="${g.id}"/></td>
+                <td th:text="${g.name}"></td>
+                <td th:text="${g.price}"></td>
+                <td class="t2"><input type="number" th:value="${g.goodsNum}" style="width:55px;padding:0.5em;font-size: 1.6rem;line-height: 1.2;border: 1px solid #ccc;border-radius: 0;" /></td>
+                <td class="t1" th:text="${g.price * g.goodsNum}"></td>
+                <td><a th:href="@{'/goods/remove/'+${g.id}}">移除</a></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(list)}"><td th:colspan="6" th:align="center">暂无信息</td></tr>
+            </tbody>
+            <tfoot  th:if="${not #lists.isEmpty(list)}">
+            <tr  class="am-success">
+                <td colspan="4">共选中<span id="num" style="color:red">3</span>件商品,共计<span id="price" style="color:red">735</span>元</td>
+                <td colspan="2" align="center"><a class="am-btn am-btn-primary" onclick="jiesuan()">结算</a></td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+
+
+    <!-- 显示邮寄地址 -->
+    <div class="am-scrollable-horizontal">
+
+        <!---->
+        <table class="am-table am-table-bordered am-table-striped am-text-nowrap">
+            <thead>
+            <tr class="am-primary">
+                <th></th>
+                <th>联系人</th>
+                <th>联系电话</th>
+                <th>邮寄地址</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody id="tbody_user">
+            <tr class="am-success" th:each="map:${maps}">
+                <td>
+                    <input type="radio" th:value="${map.id}" name="is_default" th:if="${map.is_default eq 1}" checked="checked"/>
+                    <input type="radio" th:value="${map.id}" name="is_default" th:if="${map.is_default ne 1}" />
+                </td>
+                <td th:text="${map.realName}" id="realName"></td>
+                <td th:text="${map.tel}" id="tel"></td>
+                <td th:text="${map.detail}" id="address"></td>
+                <td><a href="javascript:void(0)" th:onclick="${'delAddr('+map.id+',this)'}" style="cursor: pointer;">删除</a></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(maps)}">
+                <td th:colspan="5" th:align="center">
+                    暂无信息
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <a class="am-btn am-btn-secondary am-btn-block am-btn-success"
+           data-am-modal="{target: '#my-actions1'}">添加收货地址</a>
+    </div>
+
+    <div class="am-modal-actions" id="my-actions1">
+        <form id="saveform">
+            <div class="am-modal-actions-group">
+                <ul class="am-list">
+                    <li class="am-modal-actions-header"><span>联系人：</span>
+                        <input type="text" class="am-form-field am-radius" id="doc-ipt-name-2" name="realName" placeholder="输入联系人" />
+                    </li>
+                    <li class="am-modal-actions-header"><span>联系电话：</span>
+                        <input type="number" class="am-form-field am-radius" id="doc-ipt-tel-2" name="tel"  placeholder="输入联系方式" />
+                    </li>
+                    <li class="am-modal-actions-header">
+                        <span>邮寄地址：</span>
+                        <input type="text" class="am-form-field am-radius" id="doc-ipt-addr-2" name="detail"  placeholder="输入邮寄地址" />
+                    </li>
+                </ul>
+            </div>
+            <div class="am-modal-actions-group">
+                <a class="am-btn am-btn-secondary am-btn-block" id="saveBtn">确定</a>
+            </div>
+        </form>
+    </div>
+
+
+
+    <div th:include="footer" />
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        $(function(){
+            var nums = 0 ;
+            var money = 0 ;
+            $.each($(".t2") , function(index, row){
+                nums += $(this).find("input").val()-0;
+            });
+            $.each($(".t1"), function(index, row){
+                money += ($(this).text()-0)
+            });
+            $("#num").text(nums);
+            $("#price").text(money);
+
+
+            /***************************/
+            $("#all").click(function(){
+                $(".t3").prop("checked" , $(this).prop("checked"));
+            });
+
+            /*********************************/
+            $(".t3").change(function(){
+                var flag = true ;
+                var nums = 0 ;
+                var money = 0 ;
+                //计算选中的信息
+                $.each($(".t3") ,function(index ,row){
+                   if(row.checked !="checked" && !row.checked) {
+                       $("#all").removeProp("checked");
+                       flag = false ;
+                       return true ; //继续循环
+                   }else{
+                       //获取同级别下的t1 t2
+                       money+=  $(row).parent().siblings(".t1").text()- 0 ;
+                       nums += $(row).parent().siblings(".t2").find("input").val()-0 ;
+                   }
+                });
+                if(flag) {
+                    $("#all").prop("checked" ,"checked");
+                }
+                $("#num").text(nums);
+                $("#price").text(money);
+            });
+
+
+            /*****************************************************/
+            $(".t2 input").change(function(){
+                if(this.value-0 <=0) {
+                    this.value=1 ;
+                    alert("购买数量至少为1"); return false ;
+                }
+                if(!/^\d+$/.test(this.value)) {
+                    alert("购买数量只支持整数");return false ;
+                }
+                //
+                var allprice = ($(this).parent().prev().text()-0)*(this.value-0);
+                $(this).parent().next().eq(0).text(allprice);
+                //计算下面的总数
+                var nums = 0 ;
+                var money = 0 ;
+                $.each($(".t2") , function(index, row){
+                    nums += $(row).find("input").val()-0;
+                });
+                $.each($(".t1"), function(index, row){
+                    money += ($(row).text()-0)
+                });
+                $("#num").text(nums);
+                $("#price").text(money);
+                //保存数据库进行持久化操作
+                var prefix = [[${#httpServletRequest.getContextPath()}]] ;
+                //获取对应的购物车ID
+                var carId =  $(this).parent().parent().find("td:first").find("input").val();
+
+                $.post(prefix+'/goods/setNum' ,{carId:carId ,goodsNum:this.value} ,function(r){},'json');
+            });
+
+
+            /********************************************/
+            $("#saveBtn").click(function(){
+                //获取用户名
+                var realName = $("#doc-ipt-name-2").val();
+                var tel = $("#doc-ipt-tel-2").val();
+                var addr = $("#doc-ipt-addr-2").val();
+                if(realName==null || realName=='') return false ;
+                if(tel==null || tel =='') return false ;
+                if(!/^1[345789]\d{9}$/.test(tel)){
+                    return false ;
+                }
+                var prefix = [[${#httpServletRequest.getContextPath()}]] ;
+                var maps = [[${maps}]] ;
+                //异步进行提交
+                $.ajax({
+                    url:prefix+"/user/saveAddr" ,
+                    data:{realName:realName,tel:tel,addr:addr},
+                    dataType:'json',
+                    type:'post',
+                    success:function(r){
+                        if(r.status=='success') {
+                            //进行动态追加
+                            var html = '<tr class="am-success">'+
+                                '<td><input type="radio" value="'+ r.addrId+'" name="is_default" checked="checked"/></td>'+
+                                '<td id="realName">'+ realName +'</td>'+
+                                '<td id="tel">'+tel+'</td>'+
+                                '<td id="address">'+addr+'</td>'+
+                                '<td><a href="javascript:void(0)" onclick="delAddr('+ r.addrId+',this)" style="cursor: pointer;">删除</a></td>'+
+                                '</tr>' ;
+                            //追加到tbody中
+                            if(maps==null || maps.length==0){ //移除tr
+                                $("#tbody_user").html(html);
+                            }else{ //追加
+                                $("#tbody_user").append(html);
+                            }
+                            $(".am-dimmer").css("display","none");
+                            $("#my-actions1").css("display","none");
+                        }
+                    }
+                });
+
+            });
+
+        });
+
+        function delAddr(tagId , obj) {
+            var prefix = [[${#httpServletRequest.getContextPath()}]] ;
+            $.post(prefix+"/user/remove"+tagId ,function(r){
+                if(r.status=='success') {
+                   $(obj).parent().parent().remove();
+                }
+            },'json');
+        }
+
+        function jiesuan(){
+            var addrId = $("input[type=radio]:checked").val();
+            if(addrId==null || addrId==''){
+                alert("请选择收货地址");
+                return false ;
+            }
+            var totalMoney = $("#price").text() ;
+            var cardIds = [] ;
+            //获取商品ID信息和购买的商品数量
+            $(".t3:checked").each(function(index){
+                cardIds.push($(this).val());
+            });
+
+            if(cardIds.length==0) {
+                alert("请选择对应的商品");
+                return false ;
+            }
+            var prefix = [[${#httpServletRequest.getContextPath()}]] ;
+            //异步进行结算请求
+            var data = {
+                addrId:addrId,
+                money:totalMoney,
+                cardIds:cardIds
+            };
+            //提交form表单
+            $.ajax({
+                async:false ,
+                url:prefix+"/goods/jiesuan",
+                data:data,
+                type:'POST',
+                success:function(r){
+                    $("body").html(r);
+                }
+            });
+/*
+            $.post(prefix+"/goods/jiesuan" , data ,function(r){
+                if(r.status=='success') {
+                    //跳转到查询订单的页面
+
+                    //进行订单支付
+
+                    window.location.href=prefix+"/order/query" ;
+                }else{
+                    alert("结算失败，请联系管理员！");
+                }
+            },'json');*/
+        }
+        /*]]>*/
+    </script>
+</body>
+</html>

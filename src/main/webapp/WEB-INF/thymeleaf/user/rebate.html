@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="common"></head>
+<head>
+    <title>系统首页</title>
+</head>
+<body>
+
+    <div th:include="header"></div>
+
+
+    <hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />
+
+
+
+    <div class="am-scrollable-horizontal">
+        <table class="am-table am-table-bordered am-table-striped am-table-hover">
+            <caption><h3>返利信息</h3></caption>
+            <thead>
+                <tr class="am-primary">
+                    <th>序号</th>
+                    <th>返利金额</th>
+                    <th>返利时间</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="s,su:${list}">
+                    <td th:text="${su.count}"></td>
+                    <td th:text="${s.rebate}"></td>
+                    <td th:text="${s.createTime}"></td>
+
+                </tr>
+
+            </tbody>
+        </table>
+
+    </div>
+
+    <div th:include="footer" />
+</body>
+</html>

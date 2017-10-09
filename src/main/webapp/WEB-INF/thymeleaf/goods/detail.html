@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="common"></head>
+<head>
+    <link rel="stylesheet" th:href="@{/css/amazeui.address.min.css}" />
+    <script th:src="@{/js/iscroll.min.js}" ></script>
+    <script th:src="@{/js/address.js}" ></script>
+    <title>商品信息</title>
+</head>
+<body>
+    <div th:include="header"></div>
+
+    <!-- 展示商品详情 -->
+    <div class="am-g">
+        <div class="am-u-sm">
+            <div class="am-thumbnail">
+                <img th:src="@{'/'+ ${goodsImg}}" alt=""/>
+                <hr data-am-widget="divider" style="padding-left:5px;" class="am-divider am-divider-default"/>
+                <h4>【<span th:text="${name}"></span>】&nbsp;&nbsp;单价：￥<span style="color:red;" th:text="${#numbers.formatInteger(price ,0)}">10</span></h4>
+                <p class="paragraph-default-p" th:text="${detail}"/>
+                <hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />
+                <form class="am-form-inline" role="form" style="text-align: center;padding-bottom:15px;">
+                    <a class="am-btn am-btn-danger" th:onclick="${'addShop('+ id +')'}">加入购物车</a>
+                    <input type="number" value="1" id="price_num" style="width:55px;padding:0.5em;font-size: 1.6rem;line-height: 1.2;border: 1px solid #ccc;border-radius: 0;" />
+                    <!--<a class="am-btn am-btn-primary">a</a>-->
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <div th:include="footer" />
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        $(function(){
+
+            $(".gc").click(function(){
+                var href =$(this).attr("href");
+                window.location.href=href ;
+            });
+
+        })
+
+        function addShop(gid){
+            var prefix = [[${#httpServletRequest.getContextPath()}]] ;
+            //获取选择的商品数量
+            var priceNum = $("#price_num").val();
+            if(!/^\d+$/.test(priceNum) || priceNum-0 <=0) {
+                alert("请选择添加的商品数量");return false ;
+            }
+            var data = {goodsId:gid,goodsNum:priceNum} ;
+            //添加到购物车
+            $.post(prefix+"/goods/addShop" , data , function(r){
+                if(r.status =='success') {
+                    alert("添加成功");
+                }else{
+                    alert(r.message);
+                }
+            },'json');
+        }
+        /* ]]> */
+    </script>
+</body>
+</html>

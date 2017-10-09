@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="common"></head>
+<head>
+    <link rel="stylesheet" th:href="@{/css/amazeui.address.min.css}" />
+    <script th:src="@{/js/iscroll.min.js}" ></script>
+    <script th:src="@{/js/address.js}" ></script>
+    <title>订单信息</title>
+</head>
+<body>
+    <div th:include="header"></div>
+
+    <div class="am-scrollable-horizontal">
+        <table class="am-table am-table-bordered am-table-striped am-table-hover">
+            <caption>商品一览</caption>
+            <thead>
+            <tr class="am-primary">
+                <th>名称</th>
+                <th>单价</th>
+                <th>数量</th>
+                <th>成交价</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr class="am-success" th:each="g:${list}">
+                <td><a th:text="${g.goodsName}" th:href="@{'/goods/detail/'+ ${g.goodsId}}"/></td>
+                <td th:text="${g.goodsPrice}"></td>
+                <td th:text="${g.goodsNum}"></td>
+                <td th:text="${g.goods_total_price}"></td>
+            </tr>
+            </tbody>
+            <tfoot  th:if="${not #lists.isEmpty(list)}">
+            <tr  class="am-success">
+                <td colspan="4">共选中<span id="num" style="color:red" th:text="${#lists.size(list)}"></span>件商品,共计<span id="price" style="color:red" th:text="${list[0].orderMoney}"></span>元</td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div th:include="footer" />
+
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="common"></head>
+<head>
+    <title>用户管理</title>
+</head>
+<body>
+
+    <div th:include="header"></div>
+
+
+    <hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />
+    <!-- 搜索框 -->
+    <div class="am-g">
+        <div class="am-input-group">
+            <input type="number" th:value="${#httpServletRequest.getParameter('tel')}" id="search_condition" class="am-form-field" placeholder="输入手机号进行搜索"/>
+	      <span class="am-input-group-btn">
+	        <button class="am-btn am-btn-primary" id="search_btn" type="button"><span class="am-icon-search"></span> </button>
+	      </span>
+        </div>
+    </div>
+
+
+    <div class="am-scrollable-horizontal">
+        <table class="am-table am-table-bordered am-table-striped am-text-nowrap">
+            <thead>
+                <tr class="am-primary">
+                    <th>用户名</th>
+                    <th>联系方式</th>
+                    <th>返利方式</th>
+                    <th>返利账号</th>
+                    <th>本月消费</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="user:${users}" >
+                    <td th:text="${user.realName}"></td>
+                    <td th:text="${user.tel}"></td>
+                    <td th:text="${user.bankName}"></td>
+                    <td th:text="${user.bankNo}"></td>
+                    <td th:text="${user.saleMoney}"></td>
+                    <td><a th:href="@{'/user/detail/'+${user.id}}">详情</a><!--&nbsp;|&nbsp;<a th:href="@{'/user/black/'+${user.id}}">拉黑</a>--></td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <div th:include="panigation" />
+    </div>
+
+   <!-- <div th:include="footer" />-->
+
+    <script>
+        $(function(){
+           $("#search_btn").click(function(){
+               var val = $("#search_condition").val();
+              /* if(!/^1[356789]\d{9}$/.test(val)) {
+                   showTag($("#search_condition") , "手机号不合法");
+               }*/
+               var prefix = $("#my_current_url_page").val();
+               //进行请求
+               window.location.href=prefix+"?tel="+val ;
+           });
+        });
+
+        function showTag(tag ,context){
+            tag.popover({
+                theme: 'danger sm',
+            })
+            tag.popover("open");
+            tag.popover("setContent" , context);
+        }
+    </script>
+</body>
+</html>

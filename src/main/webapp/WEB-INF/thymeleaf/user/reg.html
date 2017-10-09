@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="common"></head>
+<head>
+    <link rel="stylesheet" th:href="@{/css/amazeui.address.min.css}" />
+    <script th:src="@{/js/iscroll.min.js}" ></script>
+    <script th:src="@{/js/address.js}" ></script>
+    <title>注册会员</title>
+</head>
+<body>
+<div th:include="header"></div>
+
+<form class="am-form am-form-horizontal" id="resform" method="post" th:action="@{/login/res}">
+    <fieldset>
+        <div class="am-form-group">
+            <input type="tel" class="am-form-field am-radius" id="doc-ipt-tel-1" name="tel" placeholder="输入手机号"/>
+        </div>
+
+        <div class="am-form-group">
+            <input type="password" class="am-form-field am-radius" id="doc-ipt-pass-1" name="password" placeholder="输入密码"/>
+        </div>
+        <div class="am-form-group">
+            <input type="text" class="am-form-field am-radius" id="doc-ipt-user-1" name="realName" placeholder="输入真实姓名"/>
+        </div>
+
+        <div class="am-form-group">
+            <input type="text" readonly="readonly" required="required" class="am-form-field am-radius" id="doc-ipt-address-1" name="city" placeholder="选择收货地址"/>
+            <input type="text" required="required" class="am-form-field am-radius" id="doc-ipt-address-2" name="detail" placeholder="输入详细地址"/>
+        </div>
+        <div class="am-form-group">
+            <select id="doc-select-1" name="bankType">
+                <option value="-1">请选择</option>
+                <option th:each="b:${application.BANK_NAME_INIT_CONFIG}" th:value="${b.id}" th:text="${b.bankName}"/>
+            </select>
+            <span class="am-form-caret"></span>
+        </div>
+
+        <div class="am-form-group">
+            <input type="text" class="am-form-field am-radius" id="doc-ipt-bak-1" name="bankNo" placeholder="输入对应收款帐号"/>
+        </div>
+
+        <div class="am-btn-group am-btn-group-justify">
+            <a class="am-btn am-btn-danger am-radius" id="resbt">注册</a>
+        </div>
+    </fieldset>
+
+    <input type="hidden" name="pid" th:value="${master}" />
+</form>
+<script th:inline="javascript">
+    $(function() {
+        $('#doc-form-file').on('change', function() {
+            $('#file_name').html(this.files[0].name);
+        });
+
+        $('#doc-ipt-address-1').address({
+            prov: "河南省",
+            city:"郑州市",
+            scrollToCenter: true,
+            footer: true,
+            selectNumber: 2,
+            selectEnd: function(json) {
+                var html= "" ;
+                for(var key in json) {
+                    html+= json[key];
+                }
+                $("#doc-ipt-address-1").val(html);
+            }
+        });
+
+        $("input").change(function(){
+            $(this).unbind("popover")
+        });
+        $("#resbt").click(function(){
+            //数据校验
+            var tel = $("#doc-ipt-tel-1").val();
+            var pass= $("#doc-ipt-pass-1").val();
+            var realName= $("#doc-ipt-user-1").val();
+            var address = $("#doc-ipt-address-2").val();
+            var bankNo = $("#doc-ipt-bak-1").val() ;
+            var sel = $("#doc-select-1");
+            if(tel == null || tel=="") {
+                showTag($("#doc-ipt-tel-1") , "手机号不能为空"); return false ;
+            }
+            if(!/^1[3578]\d{9}$/.test(tel)){
+                showTag($("#doc-ipt-tel-1") , "手机号格式不正确"); return false ;
+            }
+            if(pass == null || pass=="") {
+                showTag($("#doc-ipt-pass-1") , "密码不能为空"); return false ;
+            }
+            if(realName == null || realName=="") {
+                showTag($("#doc-ipt-user-1") , "姓名不能为空"); return false ;
+            }
+            if(address == null || address=="") {
+                showTag($("#doc-ipt-address-2") , "地址不能为空"); return false ;
+            }
+            if(bankNo == null || bankNo=="") {
+                showTag($("#doc-ipt-bak-1") , "收款账号不能为空"); return false ;
+            }
+            if(sel.find("option:selected").val()==-1) {
+                alert("请选择收款账号类型");
+                return false ;
+            }
+            $("#resform").submit();
+        });
+
+
+        var qp = [[${msg}]] ; //通过thymeleaf获取返回的值
+        if(qp) {
+            showTag($("#doc-ipt-tel-1") , qp);
+        }
+    });
+
+    function showTag(tag ,context){
+        tag.popover({
+            theme: 'danger sm',
+        })
+        tag.popover("open");
+        tag.popover("setContent" , context);
+    }
+</script>
+</body>
+</html>

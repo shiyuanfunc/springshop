@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="common"></head>
+<head>
+	<title>个人信息</title>
+</head>
+  <body>
+  	<div th:include="header"></div>
+	<!-- 表单 -->
+	<form class="am-form am-form-horizontal">
+		<fieldset>
+    		<center><legend>长按二维码并发送给朋友</legend></center>
+    		<div class="am-form-group" style="text-align:center;">
+    			<div id="output"></div>
+    		</div>
+
+			<div class="am-form-group">
+		      <input type="text" class="am-form-field am-radius" readonly="readonly" th:value="${user.realName}"/>
+		    </div>
+		     
+		    
+		    <div class="am-form-group">
+		      <input type="tel" class="am-form-field am-radius" readonly="readonly" th:value="${user.tel}"/>
+		    </div>
+		    
+		    
+		    <!--<div class="am-form-group">
+		      <input type="text" class="am-form-field am-radius" readonly="readonly" th:value="${user.address}" placeholder="请输入地址信息"/>
+		    </div>-->
+		    
+		    
+		   <div class="am-btn-group am-btn-group-justify">
+		       <a class="am-btn am-btn-danger am-radius" th:href="@{/main/next}">查看我的会员列表</a>
+		    </div>
+			<div class="am-form-group"></div>
+			<div class="am-btn-group am-btn-group-justify">
+				<a class="am-btn am-btn-danger am-radius" th:href="@{/user/rebate}">查看我的返利信息</a>
+			</div>
+		   
+		</fieldset>
+	</form>
+
+
+
+	<script th:inline="javascript">
+
+		$(function(){
+			var master = [[${master}]] ;
+			var url = [[${'http://' +#httpServletRequest.getServerName()+':'+#httpServletRequest.getServerPort()+ #httpServletRequest.getContextPath()+'/'}]] ;
+			url += 'user/reg'+ master ;
+			$('#output').qrcode({width:200,height:200,correctLevel:0,text:url});
+			var mycanvas1=document.getElementsByTagName('canvas')[0];
+			var img=convertCanvasToImage(mycanvas1);
+			$('#output').html(img);
+		});
+
+
+		function convertCanvasToImage(canvas) {
+			//新Image对象，可以理解为DOM
+			var image = new Image();
+			// canvas.toDataURL 返回的是一串Base64编码的URL，当然,浏览器自己肯定支持
+			// 指定格式 PNG
+			image.src = canvas.toDataURL("image/png");
+			return image;
+		}
+	</script>
+
+
+
+	<div th:include="footer" />
+  </body>
+</html>

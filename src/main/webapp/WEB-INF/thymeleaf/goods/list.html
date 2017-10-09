@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="common"></head>
+<head>
+    <title>商品管理</title>
+</head>
+<body>
+
+    <div th:include="header"></div>
+
+
+
+    <div class="am-scrollable-horizontal">
+        <table class="am-table am-table-bordered am-table-striped am-table-hover">
+            <caption><h3>商品一览表</h3></caption>
+            <thead>
+                <tr class="am-primary">
+                    <th>商品名</th>
+                    <th>商品原价格</th>
+                    <!--<th>是否促销</th>-->
+                    <th>会员价格</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="g:${list}" th:id="${'tr_'+ g.id}">
+                    <td><a th:text="${g.name}" th:href="@{'/goods/detail/'+ ${g.id}}"></a></td>
+                    <td th:text="${#numbers.formatInteger(g.aprice,0)}"></td>
+                    <td th:text="${#numbers.formatInteger(g.price,0)}"></td>
+                    <td>
+                        <input type="hidden" th:value="${g.detail}" />
+                        <a href="javascript:void(0);" data-am-modal="{target: '#my-actions1'}" th:onclick="${'showMsg('+ g.id +',this)'}">修改</a>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+
+
+    </div>
+
+    <!--修改商品弹出层-->
+    <div class="am-modal-actions" id="my-actions1">
+        <form id="saveform">
+            <div class="am-modal-actions-group">
+                <ul class="am-list">
+                    <li class="am-modal-actions-header"><span>商品名：</span>
+                        <input type="text" class="am-form-field am-radius" id="doc-ipt-name-1" name="goodsName" placeholder="请输入商品名" />
+                    </li>
+                    <li class="am-modal-actions-header"><span>商品原价格：</span>
+                        <input type="number" class="am-form-field am-radius" id="doc-ipt-price-1" name="goodsPrice2"  placeholder="请输入商品原价格" />
+                    </li>
+                    <li class="am-modal-actions-header">
+                        <span>商品会员价格：</span>
+                        <input type="number" class="am-form-field am-radius" id="doc-ipt-price-2" name="goodsPrice"  placeholder="请输入商品会员价格" />
+                    </li>
+                    <li class="am-modal-actions-header">
+                        <span>商品描述信息：</span>
+                        <textarea name="goodsDesc" class="am-form-field am-radius" rows="5" id="doc-ta-1" placeholder="请输入商品描述信息"/>
+                    </li>
+                </ul>
+            </div>
+            <div class="am-modal-actions-group">
+                <input type="hidden" name="id" id="doc-ta-id-1" value="" />
+                <a class="am-btn am-btn-secondary am-btn-block" id="saveBtn">确定</a>
+            </div>
+        </form>
+    </div>
+   <!-- <div th:include="footer" />-->
+
+    <script th:inline="javascript">
+       /* <![CDATA[*/
+        $(function(){
+           $("#search_btn").click(function(){
+               var val = $("#search_condition").val();
+              /* if(!/^1[356789]\d{9}$/.test(val)) {
+                   showTag($("#search_condition") , "手机号不合法");
+               }*/
+               var prefix = $("#my_current_url_page").val();
+               //进行请求
+               window.location.href=prefix+"?tel="+val ;
+           });
+
+            $("#saveBtn").click(function(){
+                var name = $("#doc-ipt-name-1").val();
+                var aprice = $("#doc-ipt-price-1").val();
+                var price = $("#doc-ipt-price-2").val();
+                var detail = $("#doc-ta-1").val();
+                if(name==null || name=="") {
+                    alert("请输入商品名称");
+                    return false ;
+                }
+                if(aprice ==null || aprice =="") {
+                    alert("请输入商品原价格");
+                    return false ;
+                }
+                if(price ==null || price =="") {
+                    alert("请输入商品会员价格");
+                    return false ;
+                }
+                if(aprice-0 < price-0) {
+                    alert("您输入的价格有误，请检查！");
+                    return false ;
+                }
+                var prefix = [[${#httpServletRequest.getContextPath()}]] ;
+                $.post(prefix+"/goods/update", $("#saveform").serialize() ,function(r){
+                    if(r.status=='success') {
+                        var tag = $("#doc-ta-id-1").val();
+                        $("#tr_"+tag).find("td:first").find("a").text(name);
+                        $("#tr_"+tag).find("td").eq(1).text(aprice);
+                        $("#tr_"+tag).find("td").eq(2).text(price);
+                        $("#tr_"+tag).find("td").eq(3).find("input").val(detail);
+                    }else{
+                        alert("修改信息失败，请联系管理员");
+                    }
+                    $(".am-dimmer").css("display","none");
+                    $("#my-actions1").css("display","none");
+                } , 'json');
+               // $("#saveform").submit();
+            });
+        });
+
+        function showTag(tag ,context){
+            tag.popover({
+                theme: 'danger sm',
+            })
+            tag.popover("open");
+            tag.popover("setContent" , context);
+        }
+
+        function showMsg(ud , tag){
+            //获取商品名
+            var name = $(tag).parent().siblings().eq(0).find("a").text();
+            var aprice =  $(tag).parent().siblings().eq(1).text();
+            var price = $(tag).parent().siblings().eq(2).text() ;
+            var detail = $(tag).prev("input").val();
+            $("#doc-ipt-name-1").val(name);
+            $("#doc-ipt-price-1").val(aprice);
+            $("#doc-ipt-price-2").val(price);
+            $("#doc-ta-1").val(detail);
+            $("#doc-ta-id-1").val(ud);
+        }
+       /* ]]>*/
+    </script>
+</body>
+</html>

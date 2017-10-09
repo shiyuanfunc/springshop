@@ -1,0 +1,38 @@
+<ul data-am-widget="pagination"
+    class="am-pagination am-pagination-select">
+
+
+    <li class="am-pagination-prev">
+        <a th:if="${page-1} ge 1" th:href="${#httpServletRequest.getRequestURL()+'?page='+ (page-1)}" class="">上一页</a>
+        <a th:if="${page-1} lt 1" class="" href="javascript:void(0)">上一页</a>
+    </li>
+
+
+    <li class="am-pagination-select">
+        <select id="panigation_select">
+            <option th:each="n:${#numbers.sequence(1,total)}" th:text="${n+'/'+total}" th:value="${n}" th:if="${n} eq ${not #arrays.isEmpty(param.page) ? param.page[0]:''}" th:attr="selected='selected'"/>
+            <option th:each="n:${#numbers.sequence(1,total)}" th:text="${n+'/'+total}" th:value="${n}" th:if="${n} neq ${not #arrays.isEmpty(param.page) ? param.page[0]:''}"/>
+        </select>
+    </li>
+
+
+    <li class="am-pagination-next ">
+        <a class="" th:if="${page-(-1)} le ${total}" th:href="${#httpServletRequest.getRequestURL()+'?page='+ (page-(-1))}">下一页</a>
+        <a class="" th:if="${page-(-1)} > ${total}" href="javascript:void(0)">下一页</a>
+    </li>
+
+    <input type="hidden" id="my_current_url_page" th:value="${#httpServletRequest.getRequestURL()}" />
+</ul>
+
+<script th:inline="javascript">
+    $(function(){
+
+        $("#panigation_select").change(function(){
+            var prefix = $("#my_current_url_page").val();
+            var val = $(this).find("option:selected").val();
+            window.location.href= prefix + "?page=" + val ;
+        });
+    });
+
+
+</script>

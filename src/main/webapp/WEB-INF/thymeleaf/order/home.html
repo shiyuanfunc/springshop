@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="common"></head>
+<head>
+    <link rel="stylesheet" th:href="@{/css/amazeui.address.min.css}" />
+    <script th:src="@{/js/iscroll.min.js}" ></script>
+    <script th:src="@{/js/address.js}" ></script>
+    <title>订单信息</title>
+</head>
+<body>
+    <div th:include="header"></div>
+
+    <div class="am-scrollable-horizontal">
+        <table class="am-table am-table-bordered am-table-striped am-text-nowrap">
+            <caption>我的订单</caption>
+            <thead>
+                <tr class="am-primary">
+                    <th>订单号</th>
+                    <th>总价</th>
+                    <th>下单时间</th>
+                    <th>状态</th>
+                    <th>支付账号</th>
+                    <th>支付时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="am-success" th:each="order:${list}">
+                    <td><a th:text="${order.orderNum}" th:href="@{'/order/detail/'+${order.id}}"></a></td>
+                    <td th:text="${order.orderMoney}"></td>
+                    <td th:text="${order.createTime}"></td>
+                    <td th:text="${order.status}"></td>
+                    <td th:text="${order.buyer_logon_id}"></td>
+                    <td th:text="${order.send_pay_date}"></td>
+                    <td>
+                        <!-- 订单支付失败，可以点击取消按钮-->
+                        <a th:if="${order.orderStatus eq 1}" th:onclick="${'del('+ order.id+')'}" href="javascript:void(0)" th:text="取消"></a>
+
+                        <a th:if="${order.orderStatus eq 2}" th:onclick="${'goback('+ order.id+')'}" href="javascript:void(0)" th:text="申请退款"></a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:include="footer" />
+
+    <script th:inline="javascript">
+        function del(id) {
+            var prefix = [[${#httpServletRequest.getContextPath()}]] ;
+            var r = confirm("您确定要删除该订单吗？") ;
+            if(r) {
+                window.location.href= prefix+"/order/cancel/"+id;
+            }
+        }
+
+        function goback(id) {
+            var prefix = [[${#httpServletRequest.getContextPath()}]] ;
+            $.post(prefix +"/order/"+id+"back", function(r){
+                if(r.status=='success'){
+                    alert("您的退款申请已经发送，请及时联系管理员完成退款流程！");
+                }
+            } ,"json");
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<div data-am-widget="navbar" class="am-navbar am-cf am-navbar-default am-no-layout" id="">
+
+    <ul class="am-navbar-nav am-cf am-avg-sm-4">
+        <li >
+            <a th:href="@{/main/}" class="">
+                <img th:src="@{/images/home.png}" alt="首页"/>
+                <span class="am-navbar-label">首页</span>
+            </a>
+        </li>
+
+        <li th:if="${session.LOGIN_FLAG_LOCAL_SESSION_VALUE.atype ne '1'}">
+            <a th:href="@{/goods/cards}" class="">
+                <img th:src="@{/images/cart.png}" alt="购物车"/>
+                <span class="am-navbar-label">购物车</span>
+            </a>
+        </li>
+
+        <li th:if="${session.LOGIN_FLAG_LOCAL_SESSION_VALUE.atype eq '1'}">
+            <a th:href="@{/c/goods/home}" class="">
+                <img th:src="@{/images/cart.png}" alt="商品管理"/>
+                <span class="am-navbar-label">商品管理</span>
+            </a>
+        </li>
+
+        <li th:if="${session.LOGIN_FLAG_LOCAL_SESSION_VALUE.atype eq '1'}">
+            <a th:href="@{/order/index}" class="">
+                <img th:src="@{/images/manshop.png}" alt="订单管理"/>
+                <span class="am-navbar-label">订单管理</span>
+            </a>
+        </li>
+
+        <li th:if="${session.LOGIN_FLAG_LOCAL_SESSION_VALUE.atype eq '1'}">
+            <a th:href="@{/sys/home}" class="">
+                <img th:src="@{/images/roadside.png}" alt="系统设置"/>
+                <span class="am-navbar-label">系统设置</span>
+            </a>
+        </li>
+
+        <li th:if="${session.LOGIN_FLAG_LOCAL_SESSION_VALUE.atype ne '1'}">
+            <a th:href="@{/order/query}" class="">
+                <img th:src="@{/images/roadside.png}" alt="我的订单"/>
+                <span class="am-navbar-label">我的订单</span>
+            </a>
+        </li>
+
+
+        <li th:if="${session.LOGIN_FLAG_LOCAL_SESSION_VALUE.atype ne '1'}">
+            <a th:href="@{/user/qudl}" class="">
+                <img th:src="@{/images/manshop.png}"  alt="个人信息"/>
+                <span class="am-navbar-label">个人信息</span>
+            </a>
+        </li>
+
+
+    </ul>
+</div>

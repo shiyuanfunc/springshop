@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.soft863.dao.UserDao">
+	
+	<select id="queryUsers" resultType="map">
+
+		SELECT t.* , b.bankName ,
+		( SELECT IFNULL(SUM(orderMoney),0) FROM t_order f WHERE f.userId = t.id AND
+		f.orderStatus IN (2 ,3 ) AND
+		DATE_FORMAT(f.payTime,'%y-%m') = DATE_FORMAT(NOW(),'%y-%m')
+		) saleMoney
+		FROM t_user t
+		LEFT JOIN t_bank b ON t.bankType = b.id
+		<where>
+			<if test="tel!=null and tel!=''">
+				t.tel like concat('%',#{tel},'%')
+			</if>
+			and t.atype !=1
+		</where>
+		order by t.createTime desc limit ${start} ,${rows}
+	</select>
+
+	<select id="queryUsersCount" resultType="int">
+		select count(1) from t_user
+		<where>
+			<if test="tel!=null and tel!=''">
+				tel like concat('%',#{tel},'%')
+			</if>
+			and atype !=1
+		</where>
+
+	</select>
+
+	<select id="queryUsersByCurrentUserId" resultType="map">
+		select t.* ,
+		( SELECT IFNULL(SUM(orderMoney),0) FROM t_order f WHERE f.userId = t.id AND
+		f.orderStatus IN (2 ,3 ) AND
+		DATE_FORMAT(f.payTime,'%y-%m') = DATE_FORMAT(NOW(),'%y-%m')
+		) saleMoney
+		 from t_user t where pid = #{userId}
+	</select>
+
+
+	<select id="queryUsersReate" resultType="map">
+		SELECT t.* , b.bankName ,
+		(
+		SELECT IFNULL(SUM(orderMoney),0) FROM t_order WHERE userId = t.id AND
+		orderStatus IN (2 ,3 ) AND
+		DATE_FORMAT(payTime,'%y-%m') = DATE_FORMAT(NOW(),'%y-%m')
+		) saleMoney
+		FROM t_user t
+		LEFT JOIN t_bank b ON t.bankType = b.id
+
+		<where>
+			<if test="tel!=null and tel!=''">
+				t.tel like concat('%',#{tel},'%')
+			</if>
+			and t.atype !=1
+			and not exists (
+				select 1 from t_user_rebate r where r.userId = t.id
+				and DATE_FORMAT(r.createTime,'%y-%m') = DATE_FORMAT(NOW(),'%y-%m')
+			)
+		</where>
+		order by t.createTime desc limit ${start} ,${rows}
+
+	</select>
+
+
+	<select id="queryUsersReateCount" resultType="int">
+		select count(1) from t_user t
+		<where>
+			<if test="tel!=null and tel!=''">
+				t.tel like concat('%',#{tel},'%')
+			</if>
+			and t.atype !=1
+			and not exists (
+				select 1 from t_user_rebate r where r.userId = t.id
+				and DATE_FORMAT(r.createTime,'%y-%m') = DATE_FORMAT(NOW(),'%y-%m')
+			)
+		</where>
+	</select>
+</mapper>

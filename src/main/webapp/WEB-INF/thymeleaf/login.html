@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head th:include="common"></head>
+  <head>
+  	<title>用户登录</title>
+  </head>
+  <body>
+
+   <div th:include="header"></div>
+
+
+
+	<!-- 琛ㄥ崟 -->
+	<form class="am-form am-form-horizontal" id="lfm" method="post" th:action="@{/login/}">
+		<fieldset>
+			<div class="am-form-group">
+		      <input type="text"  th:value="${QP==null ? '':QP.tel}" class="am-form-field am-radius" id="doc-ipt-user-1" name="tel" placeholder="请输入用户名"/>
+		    </div>
+
+
+		    <div class="am-form-group">
+		      <input type="password"  class="am-form-field am-radius" id="doc-ipt-pass-1" name="password" placeholder="请输入密码"/>
+		    </div>
+
+		    <div class="am-btn-group am-btn-group-justify">
+		       <a class="am-btn am-btn-danger am-radius" id="btnLogin">登录</a>
+		    </div>
+			<div class="am-form-group"></div>
+
+			<div class="am-btn-group am-btn-group-justify">
+				<a class="am-btn am-btn-danger am-radius" th:href="@{/c/register}">没有账号？请点击注册</a>
+			</div>
+
+
+			<a class="am-form-group" th:href="@{/login/thirdLogin}" style="color:#6c6c6c;text-align: center;margin-top:5px;cursor:pointer;display: block">
+				<img th:src="@{/images/zfb.jpg}" width="30px" height="30px" style="vertical-align:middle"/>支付宝登录
+			</a>
+		</fieldset>
+	</form>
+
+   <p align="center">©2017fuxiangyuan&nbsp;&nbsp;豫ICP备17027044号</p>
+
+	<script th:inline="javascript">
+		$(function(){
+			$("#btnLogin").click(function(){
+				var uname = $("#doc-ipt-user-1").val();
+				var pass = $("#doc-ipt-pass-1").val();
+				if(uname ==null || uname=="" || pass==null || pass=="") {
+					return false ;
+				}
+				$("#lfm").submit();
+			});
+			var qp = [[${QP}]] ; //通过thymeleaf获取返回的值
+			if(qp) {
+				var target = qp.flag=="1"?$("#doc-ipt-pass-1"):$("#doc-ipt-user-1");
+				target.popover({
+					theme: 'danger sm',
+					content:qp.msg
+				})
+				target.popover("open");
+			}
+		});
+
+	</script>
+
+
+
+  </body>
+</html>
